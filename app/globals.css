@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #556158;
+  --color-brand-primary-light: #e8f5e9;
+  --color-brand-secondary: #6b5e31;
+  --color-brand-secondary-light: #f4e2a9;
+  --color-brand-surface: #fbf9f8;
+  --color-brand-text: #1b1c1c;
+  --color-brand-text-muted: #434844;
+  --color-brand-outline: #e4e2e2;
+  
+  --font-sans: "Plus Jakarta Sans", var(--font-geist-sans);
+}
+
+@layer base {
+  body {
+    @apply bg-brand-surface text-brand-text font-sans antialiased;
+  }
+}
+
+@utility container-max {
+  width: 100%;
+  max-width: 1400px;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@utility animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
