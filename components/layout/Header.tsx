@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Search, ShoppingBag, User, Menu, X } from "lucide-react";
 import { useCartStore } from "@/lib/cart-context";
 import { usePathname, useRouter } from "next/navigation";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { getCategoryHref } from "@/lib/products";
 import LanguageToggle from "@/components/shared/LanguageToggle";
 import logo from "@/public/Logo.png";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -21,6 +23,10 @@ export default function Header() {
   const router = useRouter();
   const { t } = useLanguage();
   const shouldReduceMotion = useReducedMotion();
+  const diapersHref = getCategoryHref("Diapers");
+  const skincareHref = getCategoryHref("Skincare");
+  const feedingHref = getCategoryHref("Feeding");
+  const bundleHref = getCategoryHref("Bundle");
 
   // Close menu and search on route change
   useEffect(() => {
@@ -59,7 +65,14 @@ export default function Header() {
             className="flex min-w-0 items-center"
           >
             <div className="flex w-24 h-24 lg:w-28 lg:h-28 items-center justify-center">
-              <img src={logo.src} alt="Logo" className="w-full h-full object-contain" />
+              <Image
+                src={logo}
+                alt="TinyTots BD"
+                width={112}
+                height={112}
+                priority
+                className="w-full h-full object-contain"
+              />
             </div>
           </Link>
           </div>
@@ -68,9 +81,9 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-8 font-medium text-brand-text">
           <Link href="/" className="hover:text-brand-primary transition-colors">{t("nav.home")}</Link>
           <Link href="/shop" className="hover:text-brand-primary transition-colors">{t("nav.shop")}</Link>
-          <Link href="/shop?category=Diapers" className="hover:text-brand-primary transition-colors">{t("nav.diapers")}</Link>
-          <Link href="/shop?category=Skincare" className="hover:text-brand-primary transition-colors">{t("nav.skincare")}</Link>
-          <Link href="/shop?category=Feeding" className="hover:text-brand-primary transition-colors">{t("nav.feeding")}</Link>
+          <Link href={diapersHref} className="hover:text-brand-primary transition-colors">{t("nav.diapers")}</Link>
+          <Link href={skincareHref} className="hover:text-brand-primary transition-colors">{t("nav.skincare")}</Link>
+          <Link href={feedingHref} className="hover:text-brand-primary transition-colors">{t("nav.feeding")}</Link>
           <Link href="/blog" className="hover:text-brand-primary transition-colors">{t("nav.blog")}</Link>
           <Link href="/contact" className="hover:text-brand-primary transition-colors">{t("nav.contact")}</Link>
         </nav>
@@ -159,10 +172,10 @@ export default function Header() {
             <nav className="flex flex-col space-y-3 font-medium text-brand-text">
               <Link href="/" onClick={() => setIsMenuOpen(false)} className="px-4 py-3 bg-brand-surface rounded-xl hover:bg-brand-primary-light hover:text-brand-primary transition-colors">{t("nav.home")}</Link>
               <Link href="/shop" onClick={() => setIsMenuOpen(false)} className="px-4 py-3 bg-brand-surface rounded-xl hover:bg-brand-primary-light hover:text-brand-primary transition-colors">{t("nav.shopAll")}</Link>
-              <Link href="/shop?category=Diapers" onClick={() => setIsMenuOpen(false)} className="px-4 py-3 bg-brand-surface rounded-xl hover:bg-brand-primary-light hover:text-brand-primary transition-colors">{t("nav.diapers")}</Link>
-              <Link href="/shop?category=Skincare" onClick={() => setIsMenuOpen(false)} className="px-4 py-3 bg-brand-surface rounded-xl hover:bg-brand-primary-light hover:text-brand-primary transition-colors">{t("nav.skincare")}</Link>
-              <Link href="/shop?category=Feeding" onClick={() => setIsMenuOpen(false)} className="px-4 py-3 bg-brand-surface rounded-xl hover:bg-brand-primary-light hover:text-brand-primary transition-colors">{t("nav.feeding")}</Link>
-              <Link href="/shop?category=Bundle" onClick={() => setIsMenuOpen(false)} className="px-4 py-3 bg-[#ffeee8]/50 rounded-xl hover:bg-[#ffeee8] text-[#ba1a1a] transition-colors">{t("nav.offers")}</Link>
+              <Link href={diapersHref} onClick={() => setIsMenuOpen(false)} className="px-4 py-3 bg-brand-surface rounded-xl hover:bg-brand-primary-light hover:text-brand-primary transition-colors">{t("nav.diapers")}</Link>
+              <Link href={skincareHref} onClick={() => setIsMenuOpen(false)} className="px-4 py-3 bg-brand-surface rounded-xl hover:bg-brand-primary-light hover:text-brand-primary transition-colors">{t("nav.skincare")}</Link>
+              <Link href={feedingHref} onClick={() => setIsMenuOpen(false)} className="px-4 py-3 bg-brand-surface rounded-xl hover:bg-brand-primary-light hover:text-brand-primary transition-colors">{t("nav.feeding")}</Link>
+              <Link href={bundleHref} onClick={() => setIsMenuOpen(false)} className="px-4 py-3 bg-[#ffeee8]/50 rounded-xl hover:bg-[#ffeee8] text-[#ba1a1a] transition-colors">{t("nav.offers")}</Link>
               <Link href="/blog" onClick={() => setIsMenuOpen(false)} className="px-4 py-3 bg-brand-surface rounded-xl hover:bg-brand-primary-light hover:text-brand-primary transition-colors">{t("nav.blog")}</Link>
               <Link href="/contact" onClick={() => setIsMenuOpen(false)} className="px-4 py-3 bg-brand-surface rounded-xl hover:bg-brand-primary-light hover:text-brand-primary transition-colors">{t("nav.contact")}</Link>
             </nav>

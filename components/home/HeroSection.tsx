@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { getCategoryHref } from "@/lib/products";
 import { siteConfig } from "@/lib/site-config";
 import Image from "next/image";
 import { MotionDiv } from "@/components/shared/Motion";
@@ -9,6 +10,7 @@ import { fadeUp, softScale, staggerContainer, tapScale } from "@/lib/animations"
 
 export default function HeroSection() {
   const { language, t } = useLanguage();
+  const bundlesHref = getCategoryHref("Bundle");
 
   return (
     <section className="relative overflow-hidden bg-brand-surface py-12 md:py-20 lg:py-24">
@@ -51,7 +53,7 @@ export default function HeroSection() {
               </MotionDiv>
               <MotionDiv whileTap={tapScale}>
               <Link
-                href="/shop?category=Bundle"
+                href={bundlesHref}
                 className="inline-flex justify-center items-center h-14 px-8 rounded-full border-2 border-brand-primary text-brand-primary font-semibold text-lg hover:bg-brand-primary-light transition-colors"
               >
                 {t("hero.viewBundles")}

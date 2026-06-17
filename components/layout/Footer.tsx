@@ -1,12 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { ShieldCheck, Truck, RefreshCcw } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
+import { getCategoryHref } from "@/lib/products";
 import { getWhatsAppUrl, siteConfig } from "@/lib/site-config";
 
 export default function Footer() {
   const { language, t } = useLanguage();
+  const [notice, setNotice] = useState("");
+  const showComingSoon = () => setNotice("Customer care pages are coming soon.");
+  const diapersHref = getCategoryHref("Diapers");
 
   return (
     <footer className="bg-brand-surface pt-12 pb-24 md:pb-12 border-t border-brand-outline">
@@ -74,7 +79,7 @@ export default function Footer() {
             <h4 className="font-bold text-brand-text mb-4">{t("footer.quickLinks")}</h4>
             <ul className="space-y-2 text-sm text-brand-text-muted">
               <li><Link href="/shop" className="hover:text-brand-primary transition-colors">{t("nav.shopAll")}</Link></li>
-              <li><Link href="/shop?category=Diapers" className="hover:text-brand-primary transition-colors">{t("nav.diapers")}</Link></li>
+              <li><Link href={diapersHref} className="hover:text-brand-primary transition-colors">{t("nav.diapers")}</Link></li>
               <li><Link href="/blog" className="hover:text-brand-primary transition-colors">{t("footer.parentingBlog")}</Link></li>
               <li><Link href="/contact" className="hover:text-brand-primary transition-colors">{t("footer.contactUs")}</Link></li>
             </ul>
@@ -83,11 +88,16 @@ export default function Footer() {
           <div>
             <h4 className="font-bold text-brand-text mb-4">{t("footer.customerCare")}</h4>
             <ul className="space-y-2 text-sm text-brand-text-muted">
-              <li><a href="#" className="hover:text-brand-primary transition-colors">{t("footer.trackOrder")}</a></li>
-              <li><a href="#" className="hover:text-brand-primary transition-colors">{t("footer.shippingPolicy")}</a></li>
-              <li><a href="#" className="hover:text-brand-primary transition-colors">{t("footer.returnPolicy")}</a></li>
-              <li><a href="#" className="hover:text-brand-primary transition-colors">{t("footer.faqs")}</a></li>
+              <li><Link href="/track-order" className="hover:text-brand-primary transition-colors">{t("footer.trackOrder")}</Link></li>
+              <li><button type="button" onClick={showComingSoon} className="hover:text-brand-primary transition-colors cursor-pointer">{t("footer.shippingPolicy")}</button></li>
+              <li><button type="button" onClick={showComingSoon} className="hover:text-brand-primary transition-colors cursor-pointer">{t("footer.returnPolicy")}</button></li>
+              <li><button type="button" onClick={showComingSoon} className="hover:text-brand-primary transition-colors cursor-pointer">{t("footer.faqs")}</button></li>
             </ul>
+            {notice && (
+              <p className="mt-3 text-xs font-medium text-brand-text-muted" role="status">
+                {notice}
+              </p>
+            )}
           </div>
         </div>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Package, MapPin, RotateCcw, Tag } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
 import { MotionDiv } from "@/components/shared/Motion";
@@ -7,10 +8,11 @@ import { cardHover, fadeUp, staggerContainer, tapScale } from "@/lib/animations"
 
 export default function AccountPage() {
   const { t } = useLanguage();
+  const [notice, setNotice] = useState("");
 
   const handleSignIn = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(t("account.loginSoon"));
+    setNotice(t("account.loginSoon"));
   };
 
   const benefits = [
@@ -84,10 +86,11 @@ export default function AccountPage() {
             
             <form onSubmit={handleSignIn} className="space-y-5">
               <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-brand-text">
+                <label htmlFor="account-email" className="text-sm font-semibold text-brand-text">
                   {t("account.emailOrPhone")}
                 </label>
                 <input 
+                  id="account-email"
                   type="text" 
                   placeholder={t("account.emailPlaceholder")}
                   className="w-full h-14 bg-brand-surface border border-brand-outline rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-brand-primary transition-shadow"
@@ -97,14 +100,19 @@ export default function AccountPage() {
               
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center">
-                  <label className="text-sm font-semibold text-brand-text">
+                  <label htmlFor="account-password" className="text-sm font-semibold text-brand-text">
                     {t("account.password")}
                   </label>
-                  <a href="#" className="text-xs font-medium text-brand-primary hover:underline">
+                  <button
+                    type="button"
+                    onClick={() => setNotice(t("account.loginSoon"))}
+                    className="text-xs font-medium text-brand-primary hover:underline cursor-pointer"
+                  >
                     {t("account.forgotPassword")}
-                  </a>
+                  </button>
                 </div>
                 <input 
+                  id="account-password"
                   type="password" 
                   placeholder={t("account.passwordPlaceholder")}
                   className="w-full h-14 bg-brand-surface border border-brand-outline rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-brand-primary transition-shadow"
@@ -135,7 +143,7 @@ export default function AccountPage() {
             <button 
               type="button"
               className="w-full h-14 bg-white border-2 border-brand-outline text-brand-text font-semibold rounded-xl flex items-center justify-center gap-3 hover:bg-brand-surface transition-colors"
-              onClick={() => alert(t("account.loginSoon"))}
+              onClick={() => setNotice(t("account.loginSoon"))}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -149,10 +157,19 @@ export default function AccountPage() {
 
             <div className="mt-8 text-center">
               <span className="text-brand-text-muted text-sm">{t("account.noAccount")} </span>
-              <a href="#" className="text-brand-primary font-semibold text-sm hover:underline">
+              <button
+                type="button"
+                onClick={() => setNotice(t("account.loginSoon"))}
+                className="text-brand-primary font-semibold text-sm hover:underline cursor-pointer"
+              >
                 {t("account.createAccount")}
-              </a>
+              </button>
             </div>
+            {notice && (
+              <p className="mt-5 rounded-xl bg-brand-primary-light/40 px-4 py-3 text-center text-sm font-medium text-brand-text-muted" role="status">
+                {notice}
+              </p>
+            )}
           </div>
         </MotionDiv>
       </div>

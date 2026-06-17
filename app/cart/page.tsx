@@ -11,7 +11,16 @@ import { fadeUp, staggerContainer, tapScale } from "@/lib/animations";
 
 export default function CartPage() {
   const items = useCartStore((state) => state.items);
+  const hasHydrated = useCartStore((state) => state.hasHydrated);
   const { t } = useLanguage();
+
+  if (!hasHydrated) {
+    return (
+      <div className="flex-1 flex items-center justify-center py-20 text-brand-text-muted">
+        {t("shop.loading")}
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -47,7 +56,7 @@ export default function CartPage() {
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
         <MotionDiv className="flex-1 space-y-4" variants={staggerContainer}>
           {items.map((item) => (
-            <CartItem key={item.id} item={item} />
+            <CartItem key={item.lineId ?? item.id} item={item} />
           ))}
         </MotionDiv>
         

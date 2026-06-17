@@ -2,23 +2,27 @@
 
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { categoryDisplayNames } from "@/lib/i18n/translations";
+import { getCategoryHref, productCategories } from "@/lib/products";
 import { useLanguage } from "@/lib/i18n/language-context";
-import { Baby, Shirt, Milk, Sparkles, Heart, Gamepad2 } from "lucide-react";
+import { Baby, Shirt, Milk, Sparkles, Heart, Gamepad2, Package } from "lucide-react";
 import { MotionDiv, MotionSection } from "@/components/shared/Motion";
 import { cardHover, fadeUp, staggerContainer } from "@/lib/animations";
 
-const categories = [
-  { name: "Diapers", href: "/shop?category=Diapers", color: "bg-brand-primary-light" },
-  { name: "Skincare", href: "/shop?category=Skincare", color: "bg-[#ffeee8]" },
-  { name: "Feeding", href: "/shop?category=Feeding", color: "bg-[#f4e2a9]" },
-  { name: "Clothing", href: "/shop?category=Clothing", color: "bg-[#e8f0fe]" },
-  { name: "Toys", href: "/shop?category=Toys", color: "bg-[#fce8e8]" },
-  { name: "Mother Care", href: "/shop?category=Mother+Care", color: "bg-[#f3e8fc]" },
-];
+const iconClassName = "md:w-16 md:h-16 w-12 h-12 text-brand-primary";
+
+function CategoryIcon({ icon }: { icon: string }) {
+  if (icon === "baby") return <Baby className={iconClassName} />;
+  if (icon === "sparkles") return <Sparkles className={iconClassName} />;
+  if (icon === "milk") return <Milk className={iconClassName} />;
+  if (icon === "shirt") return <Shirt className={iconClassName} />;
+  if (icon === "gamepad") return <Gamepad2 className={iconClassName} />;
+  if (icon === "heart") return <Heart className={iconClassName} />;
+  return <Package className={iconClassName} />;
+}
 
 export default function CategorySection() {
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
+  const homepageCategories = productCategories.filter((category) => category.showOnHomepage);
 
   return (
     <MotionSection className="py-12 md:py-16 bg-white border-y border-brand-outline">
@@ -28,26 +32,20 @@ export default function CategorySection() {
         </MotionDiv>
         
         <MotionDiv className="grid grid-cols-3 md:grid-cols-6 gap-4 md:gap-8" variants={staggerContainer}>
-          {categories.map((category) => (
-            <MotionDiv key={category.name} variants={fadeUp} whileHover={cardHover}>
+          {homepageCategories.map((category) => (
+            <MotionDiv key={category.id} variants={fadeUp} whileHover={cardHover}>
             <Link
-              href={category.href}
+              href={getCategoryHref(category.id)}
               className="flex flex-col items-center gap-3 group"
             >
               <div className={cn(
                 "w-full aspect-square rounded-full flex items-center justify-center transition-transform group-hover:scale-105 border border-transparent group-hover:border-brand-outline shadow-sm",
-                category.color
+                category.colorClass
               )}>
-                {/* Category Icon Placeholder */}
-                  {category.name === "Diapers" && <Baby className="md:w-16 md:h-16 w-12 h-12 text-brand-primary" />}
-                  {category.name === "Skincare" && <Sparkles className="md:w-16 md:h-16 w-12 h-12 text-brand-primary" />}
-                  {category.name === "Feeding" && <Milk className="md:w-16 md:h-16 w-12 h-12 text-brand-primary" />}
-                  {category.name === "Clothing" && <Shirt className="md:w-16 md:h-16 w-12 h-12 text-brand-primary" />}
-                  {category.name === "Toys" && <Gamepad2 className="md:w-16 md:h-16 w-12 h-12 text-brand-primary" />}
-                  {category.name === "Mother Care" && <Heart className="md:w-16 md:h-16 w-12 h-12 text-brand-primary" />}
+                <CategoryIcon icon={category.icon} />
               </div>
               <span className="text-sm font-medium text-brand-text text-center group-hover:text-brand-primary transition-colors">
-                {categoryDisplayNames[category.name]?.[language] ?? category.name}
+                {t(category.labelKey)}
               </span>
             </Link>
             </MotionDiv>

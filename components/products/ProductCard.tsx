@@ -1,12 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
-import { type Product } from "@/lib/products";
+import {
+  getCategoryById,
+  getCompareAtPrice,
+  getProductImage,
+  hasProductVariants,
+  isProductAvailableForPurchase,
+  type Product,
+} from "@/lib/products";
 import { useCartStore } from "@/lib/cart-context";
 import { useCartToast } from "@/components/shared/ToastProvider";
-import { categoryDisplayNames } from "@/lib/i18n/translations";
+import CommerceImage from "@/components/shared/CommerceImage";
 import { useLanguage } from "@/lib/i18n/language-context";
 import { formatPrice } from "@/lib/site-config";
 import { MotionDiv } from "@/components/shared/Motion";
@@ -17,19 +24,36 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const router = useRouter();
   const addItem = useCartStore((state) => state.addItem);
+  const hasHydrated = useCartStore((state) => state.hasHydrated);
   const { showCartToast } = useCartToast();
   const { language, t } = useLanguage();
   const displayName = language === "bn" ? product.nameBn : product.name;
-  const displayCategory = categoryDisplayNames[product.category]?.[language] ?? product.category;
+  const category = getCategoryById(product.category);
+  const displayCategory = category ? t(category.labelKey) : product.category;
   const displayBadge = language === "bn" ? product.badgeBn ?? product.badge : product.badge;
-  const productImage = product.image ?? product.images?.[0] ?? "";
+  const productImage = getProductImage(product);
+  const compareAtPrice = getCompareAtPrice(product);
   const hasProductImage = Boolean(productImage) && !productImage.includes("placeholder");
+  const requiresVariantSelection = hasProductVariants(product);
+  const isAvailable = isProductAvailableForPurchase(product);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
+    if (!hasHydrated) return;
+    if (!isAvailable) return;
+
+    if (requiresVariantSelection) {
+      router.push(`/products/${product.slug}`);
+      return;
+    }
+
     addItem({
       id: product.id,
+      lineId: product.id,
+      slug: product.slug,
+      sku: product.sku,
       name: product.name,
       nameBn: product.nameBn,
       price: product.price,
@@ -49,7 +73,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
       <div className="aspect-square bg-brand-surface rounded-xl overflow-hidden mb-4 relative flex items-center justify-center">
         {hasProductImage ? (
-          <Image
+          <CommerceImage
             src={productImage}
             alt={displayName}
             fill
@@ -70,16 +94,17 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="mt-auto flex items-end justify-between pt-2">
           <div>
             <div className="text-lg font-bold text-brand-text">{formatPrice(product.price)}</div>
-            {product.oldPrice && (
-              <div className="text-xs text-brand-text-muted line-through">{formatPrice(product.oldPrice)}</div>
+            {compareAtPrice && (
+              <div className="text-xs text-brand-text-muted line-through">{formatPrice(compareAtPrice)}</div>
             )}
           </div>
 
           <MotionDiv whileTap={tapScale}>
           <button
             onClick={handleAddToCart}
-            className="w-10 h-10 rounded-full bg-brand-primary-light text-brand-primary flex items-center justify-center hover:bg-brand-primary hover:text-white transition-colors cursor-pointer"
-            aria-label={t("product.addToCart")}
+            disabled={!hasHydrated || !isAvailable}
+            className="w-10 h-10 rounded-full bg-brand-primary-light text-brand-primary flex items-center justify-center hover:bg-brand-primary hover:text-white transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+            aria-label={requiresVariantSelection ? "Select options" : t("product.addToCart")}
           >
             <Plus className="w-5 h-5" />
           </button>

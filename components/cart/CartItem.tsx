@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { Minus, Plus, Trash2 } from "lucide-react";
+import CommerceImage from "@/components/shared/CommerceImage";
 import { type CartItem as CartItemType, useCartStore } from "@/lib/cart-context";
-import { getProductById } from "@/lib/products";
+import { getProductById, getProductImage, getProductVariantSummary } from "@/lib/products";
 import { useLanguage } from "@/lib/i18n/language-context";
 import { formatPrice } from "@/lib/site-config";
 import { MotionDiv } from "@/components/shared/Motion";
@@ -21,14 +21,16 @@ export default function CartItem({ item }: CartItemProps) {
   const displayName = language === "bn"
     ? product?.nameBn ?? item.nameBn ?? item.name
     : product?.name ?? item.name;
-  const cartImage = product?.image ?? product?.images?.[0] ?? item.image ?? "";
+  const cartImage = product ? getProductImage(product) : item.image ?? "";
   const hasCartImage = Boolean(cartImage) && !cartImage.includes("placeholder");
+  const variantSummary = getProductVariantSummary(item.selectedVariants);
+  const lineId = item.lineId ?? item.id;
 
   return (
     <MotionDiv variants={fadeUp} className="flex gap-4 p-4 bg-white rounded-2xl border border-brand-outline">
       <div className="relative w-24 h-24 bg-brand-surface rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden">
         {hasCartImage ? (
-          <Image
+          <CommerceImage
             src={cartImage}
             alt={displayName}
             fill
@@ -42,12 +44,17 @@ export default function CartItem({ item }: CartItemProps) {
 
       <div className="flex flex-col flex-grow justify-between">
         <div className="flex justify-between items-start gap-3">
-          <h3 className="font-semibold text-brand-text text-sm md:text-base leading-tight">
-            {displayName}
-          </h3>
+          <div>
+            <h3 className="font-semibold text-brand-text text-sm md:text-base leading-tight">
+              {displayName}
+            </h3>
+            {variantSummary && (
+              <p className="mt-1 text-xs font-medium text-brand-text-muted">{variantSummary}</p>
+            )}
+          </div>
           <MotionDiv whileTap={tapScale}>
           <button
-            onClick={() => removeItem(item.id)}
+            onClick={() => removeItem(lineId)}
             className="text-brand-text-muted hover:text-[#ba1a1a] transition-colors p-1 cursor-pointer"
             aria-label={t("cart.remove")}
           >
@@ -64,7 +71,7 @@ export default function CartItem({ item }: CartItemProps) {
           <div className="flex items-center bg-brand-surface rounded-full p-1 border border-brand-outline">
             <MotionDiv whileTap={tapScale}>
             <button
-              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+              onClick={() => updateQuantity(lineId, item.quantity - 1)}
               className="w-7 h-7 flex items-center justify-center rounded-full bg-white text-brand-text hover:bg-brand-primary-light disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-sm cursor-pointer"
               disabled={item.quantity <= 1}
               aria-label={t("cart.decreaseQuantity")}
@@ -75,7 +82,7 @@ export default function CartItem({ item }: CartItemProps) {
             <span className="w-8 text-center text-sm font-medium">{item.quantity}</span>
             <MotionDiv whileTap={tapScale}>
             <button
-              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+              onClick={() => updateQuantity(lineId, item.quantity + 1)}
               className="w-7 h-7 flex items-center justify-center rounded-full bg-white text-brand-text hover:bg-brand-primary-light transition-colors shadow-sm cursor-pointer"
               aria-label={t("cart.increaseQuantity")}
             >

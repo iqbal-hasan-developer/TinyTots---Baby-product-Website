@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
 import { getWhatsAppUrl, siteConfig } from "@/lib/site-config";
@@ -8,10 +9,11 @@ import { cardHover, fadeUp, staggerContainer, tapScale } from "@/lib/animations"
 
 export default function ContactPage() {
   const { t } = useLanguage();
+  const [messageSent, setMessageSent] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert(t("contact.messageSent"));
+    setMessageSent(true);
   };
   const phoneHref = `tel:${siteConfig.phone.replace(/[^\d+]/g, "")}`;
 
@@ -83,27 +85,32 @@ export default function ContactPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-brand-text">{t("contact.fullName")}</label>
-                <input required type="text" className="w-full bg-brand-surface border border-brand-outline rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary" placeholder={t("contact.namePlaceholder")} />
+                <label htmlFor="contact-name" className="text-sm font-medium text-brand-text">{t("contact.fullName")}</label>
+                <input id="contact-name" required type="text" className="w-full bg-brand-surface border border-brand-outline rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary" placeholder={t("contact.namePlaceholder")} />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-brand-text">{t("contact.emailAddress")}</label>
-                <input required type="email" className="w-full bg-brand-surface border border-brand-outline rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary" placeholder={t("contact.emailPlaceholder")} />
+                <label htmlFor="contact-email" className="text-sm font-medium text-brand-text">{t("contact.emailAddress")}</label>
+                <input id="contact-email" required type="email" className="w-full bg-brand-surface border border-brand-outline rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary" placeholder={t("contact.emailPlaceholder")} />
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-brand-text">{t("contact.subject")}</label>
-              <input required type="text" className="w-full bg-brand-surface border border-brand-outline rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary" placeholder={t("contact.subjectPlaceholder")} />
+              <label htmlFor="contact-subject" className="text-sm font-medium text-brand-text">{t("contact.subject")}</label>
+              <input id="contact-subject" required type="text" className="w-full bg-brand-surface border border-brand-outline rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary" placeholder={t("contact.subjectPlaceholder")} />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-brand-text">{t("contact.message")}</label>
-              <textarea required rows={5} className="w-full bg-brand-surface border border-brand-outline rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary" placeholder={t("contact.messagePlaceholder")}></textarea>
+              <label htmlFor="contact-message" className="text-sm font-medium text-brand-text">{t("contact.message")}</label>
+              <textarea id="contact-message" required rows={5} className="w-full bg-brand-surface border border-brand-outline rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary" placeholder={t("contact.messagePlaceholder")}></textarea>
             </div>
             <MotionDiv whileTap={tapScale} className="w-full md:w-auto">
             <button type="submit" className="h-14 px-8 rounded-xl bg-brand-text text-white font-semibold text-lg hover:bg-brand-text/90 transition-colors w-full md:w-auto cursor-pointer">
               {t("contact.send")}
             </button>
             </MotionDiv>
+            {messageSent && (
+              <p className="rounded-xl bg-brand-primary-light/40 px-4 py-3 text-sm font-medium text-brand-text-muted" role="status">
+                {t("contact.messageSent")}
+              </p>
+            )}
           </form>
         </MotionDiv>
       </div>

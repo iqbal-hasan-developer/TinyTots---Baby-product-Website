@@ -1,7 +1,7 @@
 ﻿"use client";
 
+import { useState } from "react";
 import { blogPosts } from "@/lib/blog";
-import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Calendar } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/language-context";
@@ -10,6 +10,7 @@ import { cardHover, fadeUp, staggerContainer } from "@/lib/animations";
 
 export default function BlogPage() {
   const { language, t } = useLanguage();
+  const [comingSoonPostId, setComingSoonPostId] = useState<string | null>(null);
 
   return (
     <div className="flex-1 bg-brand-surface pb-16">
@@ -50,9 +51,18 @@ export default function BlogPage() {
                   <p className="text-brand-text-muted text-sm leading-relaxed mb-6 flex-grow">
                     {language === "bn" ? post.excerptBn : post.excerpt}
                   </p>
-                  <Link href="#" className="inline-flex items-center gap-2 text-brand-primary font-bold hover:underline mt-auto w-fit">
+                  <button
+                    type="button"
+                    onClick={() => setComingSoonPostId(post.id)}
+                    className="inline-flex items-center gap-2 text-brand-primary font-bold hover:underline mt-auto w-fit cursor-pointer"
+                  >
                     {t("blog.readArticle")} <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  </button>
+                  {comingSoonPostId === post.id && (
+                    <p className="mt-3 text-sm font-medium text-brand-text-muted" role="status">
+                      Full article pages are coming soon.
+                    </p>
+                  )}
                 </div>
               </MotionArticle>
             );

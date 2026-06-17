@@ -1,62 +1,39 @@
-"use client";
+import { connection } from "next/server";
+import HomeContent from "@/components/home/HomeContent";
+import { getFeaturedPublicProducts, getPublicProductsByCategoryIds } from "@/lib/products-db";
+import { getSiteUrl, siteConfig } from "@/lib/site-config";
 
-import HeroSection from "@/components/home/HeroSection";
-import CategorySection from "@/components/home/CategorySection";
-import ProductCard from "@/components/products/ProductCard";
-import { products } from "@/lib/products";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { useLanguage } from "@/lib/i18n/language-context";
-import { MotionDiv, MotionSection } from "@/components/shared/Motion";
-import { fadeUp, staggerContainer, tapScale } from "@/lib/animations";
-
-export default function Home() {
-  const popularProducts = products.slice(0, 4);
-  const newbornEssentials = products.filter(p => p.category === "Diapers" || p.category === "Mother Care" || p.category === "Clothing").slice(0, 4);
-  const { t } = useLanguage();
+export default async function Home() {
+  await connection();
+  const [popularProducts, newbornEssentials] = await Promise.all([
+    getFeaturedPublicProducts(siteConfig.homepage.popularProductLimit),
+    getPublicProductsByCategoryIds(
+    siteConfig.homepage.newbornCategoryIds,
+    siteConfig.homepage.newbornProductLimit
+    ),
+  ]);
+  const storeJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    name: siteConfig.businessName,
+    description: siteConfig.defaultSeoDescription,
+    url: getSiteUrl(),
+    telephone: siteConfig.phone,
+    email: siteConfig.email,
+    address: siteConfig.address,
+    sameAs: [siteConfig.facebookUrl, siteConfig.instagramUrl],
+  };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <HeroSection />
-      <CategorySection />
-      
-      <MotionSection className="py-16 md:py-24 bg-brand-surface">
-        <div className="container-max mx-auto px-4 md:px-6">
-          <MotionDiv className="flex items-center justify-between mb-8" variants={fadeUp}>
-            <h2 className="text-2xl md:text-3xl font-bold text-brand-text">{t("section.popularEssentials")}</h2>
-            <MotionDiv whileTap={tapScale}>
-            <Link href="/shop" className="text-brand-primary font-medium flex items-center gap-1 hover:underline">
-              {t("section.viewAll")} <ArrowRight className="w-4 h-4" />
-            </Link>
-            </MotionDiv>
-          </MotionDiv>
-          
-          <MotionDiv className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6" variants={staggerContainer}>
-            {popularProducts.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </MotionDiv>
-        </div>
-      </MotionSection>
-
-      <MotionSection className="py-16 md:py-24 bg-white border-t border-brand-outline">
-        <div className="container-max mx-auto px-4 md:px-6">
-          <MotionDiv className="flex items-center justify-between mb-8" variants={fadeUp}>
-            <h2 className="text-2xl md:text-3xl font-bold text-brand-text">{t("section.curatedNewborns")}</h2>
-            <MotionDiv whileTap={tapScale}>
-            <Link href="/shop" className="text-brand-primary font-medium flex items-center gap-1 hover:underline">
-              {t("section.shopNewborn")} <ArrowRight className="w-4 h-4" />
-            </Link>
-            </MotionDiv>
-          </MotionDiv>
-          
-          <MotionDiv className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6" variants={staggerContainer}>
-            {newbornEssentials.map(product => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </MotionDiv>
-        </div>
-      </MotionSection>
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(storeJsonLd) }}
+      />
+      <HomeContent
+        popularProducts={popularProducts}
+        newbornEssentials={newbornEssentials}
+      />
+    </>
   );
 }
